@@ -6,8 +6,7 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "start": "node bot.ts",
-    "start:dev": "nodemon bot.ts"
+    "dev": "nodemon bot.ts"
   },
   "dependencies": {
     "axios": "^0.21.1",

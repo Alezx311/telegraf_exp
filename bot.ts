@@ -1,16 +1,16 @@
-//* ##### Environment #####;
+//!  ##### Environment #####;
 import { config } from 'dotenv';
 config();
 
-//* ##### Dependencies #####
+//!  ##### Dependencies #####
 import { Telegraf } from 'telegraf';
 import { default as axios } from 'axios';
 
-//* ##### Variables #####
+//!  ##### Variables #####
 const { QUOTES_API_URL, QUOTES_API_KEY, BOT_TOKEN } = process.env;
 const QUOTES_API_LIVE = `${QUOTES_API_URL}/live?access_key=${QUOTES_API_KEY}&format=1`;
 
-//* ##### State #####
+//!  ##### State #####
 const INITIAL_STATE = {
   currencies: ['UAH', 'EUR', 'RUB', 'BTC', 'ETH', 'DOGE'],
   timestamp: Date.now(),
@@ -24,14 +24,14 @@ const INITIAL_STATE = {
 const state = { ...INITIAL_STATE };
 const stateReducer = (upd = {}) => Object.assign(state, upd);
 
-//* ##### Helpers & Misc #####
+//!  ##### Helpers & Misc #####
 const toTitle = (str) => `\n\t----------\t\n\t${str}\t\n\t----------\t\n`;
 const toJSON = (obj = {}) => JSON.stringify(obj, null, '\t');
 const toLog = (title = 'New Log', obj = {}, type = 'log') =>
   console?.[type](`${toTitle(title)}${toJSON(obj)}`);
 const objEach = (obj, f) => Object.fromEntries(Object.entries(obj).map(f));
 
-//* ##### Messages #####
+//!  ##### Messages #####
 const MESSAGES = {
   MAIN: `${toTitle('Main Menu')}\n${toJSON(state)}`,
   HELP: `${toTitle('Help')}
@@ -46,7 +46,7 @@ Commands:\n/start\n/main\n/help\n/settings\n/quotes\n/reset`,
   CONVERT: toTitle(`Converted from ${state.user_currency}`),
 };
 
-//* ##### Telegram Buttons #####
+//!  ##### Telegram Buttons #####
 const BUTTON = {
   MAIN: [{ text: 'Main', callback_data: 'action_MAIN' }],
   HELP: [{ text: 'Help', callback_data: 'action_HELP' }],
@@ -55,15 +55,15 @@ const BUTTON = {
   RESET: [{ text: 'Reset', callback_data: 'action_RESET' }],
 };
 
-//* ##### Create Telegram Keyboard #####
+//!  ##### Create Telegram Keyboard #####
 const KEYBOARD = (buttons) => ({
   reply_markup: { remove_keyboard: true, inline_keyboard: buttons },
 });
-//* ##### Create Reply, for clean code #####
+//!  ##### Create Reply, for clean code #####
 const REPLY = async (ctx, msg, kb = KEYBOARD([BUTTON.MAIN])) =>
   await ctx.reply(msg, kb);
 
-//* ##### Telegram Action Handlers #####
+//!  ##### Telegram Action Handlers #####
 class HANDLERS {
   public static async onMain(ctx) {
     const msg = toTitle(`Hi, ${ctx.from.username}!`);
@@ -159,14 +159,10 @@ class HANDLERS {
   }
 }
 
-//* ##### Telegram Bot Init #####
+//!  ##### Telegram Bot Init #####
 const bot = new Telegraf(BOT_TOKEN);
 
 bot.catch((err) => console.error(err));
-bot.use(async (ctx, next) => {
-  toLog('Context update', ctx.update);
-  await next();
-});
 
 bot.command(['start', 'main'], HANDLERS.onMain);
 bot.command('help', HANDLERS.onHelp);
@@ -184,6 +180,6 @@ bot.action('action_HELP', HANDLERS.onHelp);
 
 bot.launch();
 
-// Enable graceful stop
+//! ##### Enable graceful stop #####
 process.once('SIGINT', () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));
