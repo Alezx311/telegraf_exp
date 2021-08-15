@@ -1,6 +1,6 @@
 import { BOT_ACTION, BOT_COMMANDS_VERBOSE, CallbackButton, CallbackButtonProps, MarkupButtonProps } from './interfaces';
-import { Fake, FAKER_ACTIONS, FAKER_COMMANDS, showCommands } from './Fake';
 import { Markup } from 'telegraf';
+import { FAKER_COMMANDS, FAKER_COMMAND_METHODS } from './Fake';
 
 export const COMMANDS = Object.values(BOT_ACTION)
   .map((str) => `/${str}`)
@@ -20,16 +20,13 @@ export const CREATE_MENU = (btns: string[]) =>
   Markup.inlineKeyboard([...btns.map((v) => CREATE_BUTTON(v)), BUTTON.MAIN], { columns: 3 });
 export const MESSAGE = {
   HELP: toTitle('HELP', BOT_COMMANDS_VERBOSE),
-  FAKER_HELP: toTitle('FAKER_HELP', showCommands()),
-  FAKER_COMMANDS: showCommands(),
+  FAKER_HELP: toTitle('FAKER_HELP', FAKER_COMMANDS.map((c) => `/${c}`).join('\n')),
   MAIN: toTitle('MAIN', ''),
   SETTINGS: toTitle('SETTINGS', ''),
   PROFILE: toTitle('PROFILE', ''),
   RESET: toTitle('RESET', ''),
   START: toTitle('START', ''),
   TEST: toTitle('TEST', ''),
-  RANDOM_IMAGE: () => Fake.random_image(),
-  RANDOM_DATA: () => toTitle('RANDOM DATA', Fake.toText(Fake.helpers_contextualCard())),
 };
 
 export const BUTTON = {
@@ -59,8 +56,8 @@ export const KEYBOARD = {
   RANDOM_DATA: Markup.inlineKeyboard([BUTTON.RANDOM_DATA, BUTTON.MAIN]),
   FAKER_COMMANDS: Markup.inlineKeyboard(BUTTONS_FAKER_COMMANDS, { columns: 3 }),
   FAKER_COMMAND_METHODS: (command) => {
-    const keys = Object.keys(FAKER_ACTIONS?.[command]);
-    const buttons = keys.map((k) => CREATE_BUTTON(k.toUpperCase(), { callback_data: `/${command} ${k}` }));
+    const keys = FAKER_COMMAND_METHODS(command);
+    const buttons = keys.map((k) => CREATE_BUTTON(k, { callback_data: `/${command} ${k}` }));
     return Markup.inlineKeyboard(buttons, { columns: 3 });
   },
 };

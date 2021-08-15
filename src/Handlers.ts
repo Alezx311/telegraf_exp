@@ -21,23 +21,26 @@ export class Handlers {
     const message = text ?? ctx.message.text;
     const [command, method, ...args] = message?.replace('/', '')?.split(' ');
     const result = Faker?.[command]?.[method]?.(...args) ?? 'Invalid Command: ';
-    const commands = FAKER_COMMANDS.map((cmd) => `/${cmd} (method) <args>`).join('\n');
 
-    return await ctx.reply(`Result: ${result}\n${commands}`, KEYBOARD.FAKER_COMMAND_METHODS(command));
+    return await ctx.reply(`${result}`, KEYBOARD.FAKER_COMMAND_METHODS(command));
   }
 
   public static async RANDOM_IMAGE(ctx: Context): Promise<any> {
-    return await ctx.replyWithPhoto(MESSAGE.RANDOM_IMAGE(), KEYBOARD.RANDOM_IMAGE);
+    return await ctx.reply(Faker.image.imageUrl(), KEYBOARD.RANDOM_IMAGE);
   }
 
   public static async RANDOM_IMAGE_MANY(ctx: Context): Promise<any> {
-    const send = async () => await ctx.replyWithPhoto(MESSAGE.RANDOM_IMAGE());
-    await Promise.all(Array(9).fill(1).map(send));
+    await Promise.all(
+      Array(9)
+        .fill(1)
+        .map(async () => await ctx.reply(Faker.image.imageUrl())),
+    );
     return await this.RANDOM_IMAGE(ctx);
   }
 
   public static async RANDOM_DATA(ctx: Context): Promise<any> {
-    return await ctx.reply(MESSAGE.RANDOM_DATA(), KEYBOARD.RANDOM_DATA);
+    const data = Faker.helpers.contextualCard();
+    return await ctx.reply(JSON.stringify(data, null, '\t'), KEYBOARD.RANDOM_DATA);
   }
 
   public static async TEST(ctx: Context): Promise<any> {
